@@ -1,9 +1,15 @@
 import React, { Component } from 'react';
+import { compose, graphql } from 'react-apollo'
+
+import ListRecipes from './queries/list-recipes'
+
 import logo from './logo.svg';
+
 import './App.css';
 
 class App extends Component {
   render() {
+    console.log('Props:', this.props)
     return (
       <div className="App">
         <header className="App-header">
@@ -18,4 +24,11 @@ class App extends Component {
   }
 }
 
-export default App;
+export default graphql(ListRecipes, {
+  options: {
+    fetchPolicy: 'cache-and-network',
+    props: props => ({
+      recipes: props.data.listRecipes ? props.data.listRecipes.items : []
+    })
+  }
+})(App);
