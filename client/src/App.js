@@ -16,9 +16,14 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
-        <p className="App-intro">
+        <div className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+          <ul>
+            { this.props.recipes.map(recipe => (
+              <li key={recipe.id}>{ recipe.name }</li>
+            ))}
+          </ul>
+        </div>
       </div>
     );
   }
@@ -27,8 +32,8 @@ class App extends Component {
 export default graphql(ListRecipes, {
   options: {
     fetchPolicy: 'cache-and-network',
-    props: props => ({
-      recipes: props.data.listRecipes ? props.data.listRecipes.items : []
-    })
-  }
+  },
+  props: props => ({
+    recipes: props.data.listRecipes ? props.data.listRecipes.items : []
+  })
 })(App);
