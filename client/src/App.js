@@ -10,13 +10,20 @@ import logo from './logo.svg';
 import './App.css';
 
 const styles = {
+  continer: {
+    display: 'flex'
+  },
   input: {
     border: 'none',
     borderBottom: '2px solid blue',
     fontSize: 22,
     height: 50,
     margin: 10,
-    width: 300,
+    width: 450,
+  },
+  button: {
+    height: 50,
+    width: 450,
   }
 }
 
@@ -68,7 +75,7 @@ class App extends Component {
   render() {
     console.log('Props:', this.props)
     return (
-      <div className="App">
+      <div className="App" style={styles.container}>
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
@@ -80,11 +87,40 @@ class App extends Component {
               <li key={recipe.id}>{ recipe.name }</li>
             ))}
           </ul>
+
           <input
             placeholder='Recipe Name'
+            value={this.state.name}
             style={styles.input}
-            onChange={evt => this.onChange('name', evt.target.name)}
+            onChange={evt => this.onChange('name', evt.target.value)}
           />
+
+          <input
+            placeholder='Ingredient Name'
+            value={this.state.ingredient}
+            style={styles.input}
+            onChange={evt => this.onChange('ingredient', evt.target.value)}
+          />
+          <button
+            style={styles.button}
+            onClick={this.addIngredient}
+          >Add Ingredient</button>
+
+          <input
+            placeholder='Direction Name'
+            value={this.state.direction}
+            style={styles.input}
+            onChange={evt => this.onChange('direction', evt.target.value)}
+          />
+          <button
+            style={styles.button}
+            onClick={this.addDirection}
+          >Add Direction</button>
+
+          <button
+            style={styles.button}
+            onClick={this.addRecipe}
+          >Add Recipe</button>
         </div>
       </div>
     );
