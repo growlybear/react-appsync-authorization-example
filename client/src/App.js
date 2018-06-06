@@ -73,7 +73,6 @@ class App extends Component {
     })
   }
   render() {
-    console.log('Props:', this.props)
     return (
       <div className="App" style={styles.container}>
         <header className="App-header">
@@ -139,7 +138,25 @@ export default compose(
   graphql(CreateRecipe, {
     props: props => ({
       onAddRecipe: recipe => props.mutate({
-        variables: recipe
+        variables: recipe,
+        // I have no idea what's going on here ¯\_(ツ)_/¯
+        optimisticResponse: {
+          __typename: 'Mutation',
+          createRecipe: {
+            ...recipe,
+            __typename: 'Recipe'
+          }
+        },
+        update: (proxy, { data: { createRecipe }}) => {
+          const data = proxy.readQuery({
+            query: ListRecipes
+          })
+          data.listRecipes.items.push(createRecipe)
+          proxy.writeData({
+            query: ListRecipes,
+            data
+          })
+        }
       })
     })
   })
