@@ -151,11 +151,19 @@ export default compose(
           const data = proxy.readQuery({
             query: ListRecipes
           })
-          data.listRecipes.items.push(createRecipe)
-          proxy.writeData({
-            query: ListRecipes,
-            data
+          let alreadyAdded = false
+          data.listRecipes.items.map(item => {
+            if (item.id === createRecipe.id) {
+              alreadyAdded = true
+            }
           })
+          if (!alreadyAdded) {
+            data.listRecipes.items.push(createRecipe)
+            proxy.writeData({
+              query: ListRecipes,
+              data
+            })
+          }
         }
       })
     })
