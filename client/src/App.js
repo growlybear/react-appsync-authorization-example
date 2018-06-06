@@ -1,11 +1,24 @@
 import React, { Component } from 'react';
 import { compose, graphql } from 'react-apollo'
+import uuid from 'uuid/v4'
 
 import ListRecipes from './queries/list-recipes'
+import CreateRecipe from './mutations/create-recipe'
 
 import logo from './logo.svg';
 
 import './App.css';
+
+const styles = {
+  input: {
+    border: 'none',
+    borderBottom: '2px solid blue',
+    fontSize: 22,
+    height: 50,
+    margin: 10,
+    width: 300,
+  }
+}
 
 class App extends Component {
   state = {
@@ -38,7 +51,22 @@ class App extends Component {
       })
     }
   }
+  addRecipe = () => {
+    const { name, ingredients, directions } = this.state
+    this.props.onAddRecipe({
+      id: uuid(),
+      name,
+      ingredients,
+      directions
+    })
+    this.setState({
+      name: '',
+      ingredient: '',
+      direction: ''
+    })
+  }
   render() {
+    console.log('Props:', this.props)
     return (
       <div className="App">
         <header className="App-header">
@@ -52,6 +80,11 @@ class App extends Component {
               <li key={recipe.id}>{ recipe.name }</li>
             ))}
           </ul>
+          <input
+            placeholder='Recipe Name'
+            style={styles.input}
+            onChange={evt => this.onChange('name', evt.target.name)}
+          />
         </div>
       </div>
     );
@@ -65,6 +98,13 @@ export default compose(
     },
     props: props => ({
       recipes: props.data.listRecipes ? props.data.listRecipes.items : []
+    })
+  }),
+  graphql(CreateRecipe, {
+    props: props => ({
+      onAddRecipe: recipe => props.mutate({
+        variables: recipe
+      })
     })
   })
 )(App);
