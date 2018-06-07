@@ -4,6 +4,7 @@ import uuid from 'uuid/v4'
 
 import ListRecipes from './queries/list-recipes'
 import CreateRecipe from './mutations/create-recipe'
+import OnCreateRecipe from './subscriptions/on-create-recipe'
 
 import logo from './logo.svg';
 
@@ -34,6 +35,9 @@ class App extends Component {
     ingredients: [],
     direction: '',
     directions: []
+  }
+  componentDidMount() {
+    this.props.recipeSubscription()
   }
   onChange = (key, value) => {
     this.setState({ [key]: value })
@@ -132,7 +136,22 @@ export default compose(
       fetchPolicy: 'cache-and-network',
     },
     props: props => ({
-      recipes: props.data.listRecipes ? props.data.listRecipes.items : []
+      recipes: props.data.listRecipes ? props.data.listRecipes.items : [],
+      recipeSubscription: params => {
+        props.data.subscribeToMore({
+          document: OnCreateRecipe,
+          updateQuery: (prev, { subscriptionData: { data: { onCreateRecipe }}}) => ({
+            ...prev,
+            listRecipes: {
+              __typename: 'RecipeConnection',
+              items: [
+                onCreateRecipe,
+                ...prev.listRecipes.items.filter(recipe => recipe.id !== onCreateRecipe.id )
+              ]
+            }
+          })
+        })
+      }
     })
   }),
   graphql(CreateRecipe, {
@@ -156,6 +175,7 @@ export default compose(
             if (item.id === createRecipe.id) {
               alreadyAdded = true
             }
+            return true
           })
           if (!alreadyAdded) {
             data.listRecipes.items.push(createRecipe)
